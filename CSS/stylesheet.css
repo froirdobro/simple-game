@@ -1,0 +1,24 @@
+body {
+	margin: 0;
+}
+
+canvas {
+	display: block;
+	border: 3px black solid;
+	background-color: rgb(252, 230, 171);
+}
+
+.modal {
+	text-align: center;
+	display: block;
+	position: fixed;
+	left: 25%;
+	top: 30%;
+	width: 50%;
+	height: 50%;
+	background-color: grey;
+}
+
+#htmlContent {
+	text-align: center;
+}
