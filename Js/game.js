@@ -4,19 +4,26 @@ canvas.height = window.innerHeight/1.5;
 const ctx = canvas.getContext("2d");
 let g_counter = 0;
 let g_entities = [];
+let g_elapsedSeconds = 0;
+let setObst;
+let start;
 
 class Ball {
     constructor(x, y, radius) {
         this.x = x;
         this.y = y
-        this.radius = 30;
+        this.radius = 20;
         this.dx = 0;
         this.dy = -2;
+
+        this.isDead = false;
     }
 
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+        ctx.fillStyle = "green";
+        ctx.fill();
         ctx.stroke();
         ctx.closePath();
     }
@@ -35,17 +42,30 @@ class Ball {
         if(this.y + this.dy > canvas.height-this.radius || this.y + this.dy < this.radius) {
             this.dy = this.dy * -1;
         };
+
+        for (const entity of g_entities) {
+        	if (!(entity instanceof Obstacle))
+        		continue;
+
+        	if (this.isCollidingWith(entity)) {
+        		// game over!
+        		gameOver();
+        		return;
+        	}
+        }
 	}
 
-	collision(rect, start) {
-		let distX = Math.abs(this.x - rect.x-rect.w/2);
-		let distY = Math.abs(this.y - rect.y-rect.h/2);
+	isCollidingWith(rect) {
+		let distX = Math.abs(this.x - rect.x - rect.w/2);
+		let distY = Math.abs(this.y - rect.y - rect.h/2);
 
 	    let xD = distX - rect.w/2;
 	    let yD = distY - rect.h/2;
 
-	    if (xD * xD + yD * yD <= (this.radius * this.radius)) {
-	    	clearInterval(start);	
+		if (xD * xD + yD * yD <= (this.radius * this.radius)) {
+	   		return true;
+	    } else {
+	    	return false;
 	    };
 	}
 
@@ -61,18 +81,28 @@ class Ball {
 }
 
 class Obstacle {
+	static spawnNew() {
+		const newObstacle = new Obstacle(canvas.width, Math.random() * canvas.height);
+		g_entities.push(newObstacle);
+		return newObstacle;
+	}
+
     constructor(x, y, w, h) {
         this.x = x;
         this.y = y;
-        this.w = 50;
-        this.h = 50;
+        this.w = 40;
+        this.h = 40;
         this.dx = -5;
         this.dy = 0;
+
+        this.isDead = false;
     }
 
     draw() {
         ctx.beginPath();
         ctx.rect(this.x, this.y, this.w, this.h);
+        ctx.fillStyle = "black";
+        ctx.fill();
         ctx.stroke();
         ctx.closePath();
     }
@@ -82,6 +112,11 @@ class Obstacle {
 
         this.x += this.dx;
         this.y += this.dy;
+
+        if (this.x <= -this.w) {
+        	// obstacle has disappeared, clean it up
+        	this.isDead = true;
+        }
     }
 }
 
@@ -92,28 +127,38 @@ player.draw();
 
 document.getElementById('startBtn').addEventListener("click", () => {
     document.getElementById('startModal').style.display = "none";
-    //game starts
-    let start = setInterval(() => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        player.direction();
-        for (const entity of g_entities) {
-            entity.update();
-            player.collision(entity, start);
-        };
-    }, 10);
+	start = setInterval(() => {
+	    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	    player.direction();
+	    for (const entity of g_entities) {
+	        entity.update();
+	    };
 
-    //draws first set of obstacles
-    setInterval(() => {
-    	const newObstacle = new Obstacle(canvas.width, Math.random() * canvas.height);
-    	g_entities.push(newObstacle);
+	    // clean up dead entities
+	    for (let i = g_entities.length - 1; i >= 0; i--) {
+	    	const entity = g_entities[i];
+	    	if (entity.isDead) {
+	    		g_entities.splice(i, 1);
+	    	}
+	    }
+	}, 10);
+
+    setObst = setInterval(() => {
+    	g_elapsedSeconds++;
+
+    	// every 5 seconds, increase the number of obstacles spawned
+    	for (let i = 1; i <= Math.floor(g_elapsedSeconds / 5) + 1; i++) {
+    		Obstacle.spawnNew();
+    		console.log("I'm drawing bitch");
+    	}
 	}, 1000);
-
-    //draws second set of obstacles
-	setInterval(() => {
-    	const newObstacle2 = new Obstacle(canvas.width, Math.random() * canvas.height);
-    	g_entities.push(newObstacle2);
-	}, 1500)
 });
+
+function gameOver() {
+	clearInterval(start);
+	clearInterval(setObst);
+	document.getElementById("endModal").style.display = "block";
+};
 
 /*  (0,0)        y < 0      (width,0)
       /----------------------\
