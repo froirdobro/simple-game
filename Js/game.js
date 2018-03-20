@@ -1,10 +1,12 @@
 const canvas = document.querySelector('canvas');
-canvas.width = window.innerWidth-6;
-canvas.height = window.innerHeight/1.5;
+canvas.width = window.innerWidth-40;
+canvas.height = window.innerHeight/1.32;
 const ctx = canvas.getContext("2d");
+const img = document.getElementById("image");
 let g_counter = 0;
 let g_entities = [];
 let g_elapsedSeconds = 0;
+let g_audios = [];
 let setObst;
 let start;
 
@@ -15,16 +17,14 @@ class Ball {
         this.radius = 20;
         this.dx = 0;
         this.dy = -2;
-
         this.isDead = false;
     }
 
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-        ctx.fillStyle = "green";
+        ctx.fillStyle = "#306532";
         ctx.fill();
-        ctx.stroke();
         ctx.closePath();
     }
 
@@ -101,9 +101,8 @@ class Obstacle {
     draw() {
         ctx.beginPath();
         ctx.rect(this.x, this.y, this.w, this.h);
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "#CA9668";
         ctx.fill();
-        ctx.stroke();
         ctx.closePath();
     }
 
@@ -120,13 +119,46 @@ class Obstacle {
     }
 }
 
+class Sound {
+	constructor(filePath) {
+		this.audio = new Audio(filePath);
+	}
+
+	play() {
+		this.audio.play();
+	}
+
+	loopAudio() {
+		this.audio.addEventListener("ended", () => {
+			this.audio.currentTime = 0;
+			this.audio.play();
+		}, false);
+
+		this.audio.play();
+	}
+
+	stop() {
+		this.audio.pause();
+    	this.audio.currentTime = 0;
+	}
+}
+
 let player = new Ball(canvas.width/16, canvas.height/2);
 g_entities.push(player);
 
+let crash = new Sound("Audio/crash.mp3");
+let mainSong = new Sound("Audio/The_Clergys_Lamentation.mp3");
+let begSong = new Sound("Audio/title_song.mp3");
+let endSong = new Sound("Audio/game_over.mp3");
+
 player.draw();
+begSong.loopAudio();
 
 document.getElementById('startBtn').addEventListener("click", () => {
-    document.getElementById('startModal').style.display = "none";
+	document.getElementById('startModal').style.display = "none";
+    document.getElementById('restContent').style.display = "block";
+    begSong.stop();
+    mainSong.loopAudio();
 	start = setInterval(() => {
 	    ctx.clearRect(0, 0, canvas.width, canvas.height);
 	    player.direction();
@@ -149,14 +181,20 @@ document.getElementById('startBtn').addEventListener("click", () => {
     	// every 5 seconds, increase the number of obstacles spawned
     	for (let i = 1; i <= Math.floor(g_elapsedSeconds / 5) + 1; i++) {
     		Obstacle.spawnNew();
-    		console.log("I'm drawing bitch");
-    	}
+    	};
+
+    	document.getElementById("score").innerText = g_elapsedSeconds;
 	}, 1000);
 });
 
+
 function gameOver() {
+	crash.play();
 	clearInterval(start);
 	clearInterval(setObst);
+	mainSong.stop();
+	endSong.loopAudio();
+	document.getElementById("scoreText").innerText = "Final Score";
 	document.getElementById("endModal").style.display = "block";
 };
 
