@@ -2,21 +2,30 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Run</title>
+	<title>Simple Game</title>
 	<link rel="stylesheet" type="text/css" href="CSS/stylesheet.css">
 </head>
 <body>
-	<div id="myModal" class="modal">
-		<div id="content">
+	<div id="startModal" class="modal">
+		<div id="startContent">
 			<h1>Welcome to my game</h1>
-			<p>These are supposed to be the instructions</p>
+			<p>This is a very simple game! The only objective is constantly change the ball direction and avoid the obstacles with the pass of time!<br>
+			The longer you survive, the higher score you get.<br>
+			The game will over as soon as the ball hits one of the many obstacles<br>
+			To control the direction of the ball just press Space bar<br>
+			The ball also bounces when it hit the borders, this can be used as an advantage but it can also be your worst enemy!</p>
 		</div>
-		<button id="startBtn">Start!</button>
+		<button id="startBtn" class="pure-button">Start!</button>
+	</div>
+	<div id="endModal" class="modal">
+		<div id="endContent">
+			<h1>Game<br>Over</h1>
+		</div>
 	</div>
 	<canvas id="myCanvas"></canvas>
-	<div id="htmlContent">
-		<h1>Current Score:</h1>
-		<p id="score"></p>
+	<div id="restContent">
+		<h1 id="scoreText">Current Score:</h1>
+		<p id="score">0</p>
 	</div>
 	<script type="text/javascript" src="Js/game.js"></script>
 </body>

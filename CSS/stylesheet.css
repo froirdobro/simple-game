@@ -1,24 +1,68 @@
 body {
 	margin: 0;
+	background-color: lightblue;
+	font-family: Verdana, Helvetica, sans-serif;
 }
 
 canvas {
-	display: block;
-	border: 3px black solid;
-	background-color: rgb(252, 230, 171);
+	border: 20px solid transparent;
+	background-image: url("../Images/canvas-background.jpg");
+	background-size: 100% 100%;
 }
 
 .modal {
 	text-align: center;
-	display: block;
 	position: fixed;
 	left: 25%;
-	top: 30%;
+	top: 25%;
 	width: 50%;
 	height: 50%;
-	background-color: grey;
+	background-color: white;
+	box-shadow: 8px 8px 5px grey;
 }
 
-#htmlContent {
+.pure-button {
+    font-family: inherit;
+    font-size: 100%;
+    padding: 0.5em 1em;
+    color: #444; 
+    color: rgba(0, 0, 0, 0.80); 
+    border: 1px solid #999;  
+    border: none rgba(0, 0, 0, 0);
+    background-color: #E6E6E6;
+    text-decoration: none;
+    border-radius: 2px;
+}
+
+#play-pauseBtn {
+	margin-top: 6%;
+}
+
+#startContent {
+	padding-top: 5%;
+	padding-left: 13%;
+	padding-right: 13%;
+}
+
+#endContent {
+	padding-top: 40px;
+	font-size: 30px;
+}
+
+#startModal {
+	display: block;
+}
+
+#endModal {
+	display: none;
+}
+
+#restContent {
 	text-align: center;
+	display: none;
+	background-color: rgb(229, 248, 255);
+	height: 90px;
+	width: 450px;
+	margin: auto;
+	box-shadow: 8px 8px 5px grey;
 }
